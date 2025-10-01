@@ -13,7 +13,20 @@ export default function Register() {
   const { register: reg, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(schema) });
   const { register: doRegister } = useAuth();
 
-  const onSubmit = handleSubmit(async (v: any) => { await doRegister(v.name, v.email, v.password); navigate('/app'); });
+  //const onSubmit = handleSubmit(async (v: any) => { await doRegister(v.name, v.email, v.password); navigate('/app'); });
+  const onSubmit = handleSubmit(async (v: any) => {
+  try {
+    await doRegister(v.name, v.email, v.password);
+    navigate('/app');
+  } catch (err: any) {
+    if (err?.response?.status === 409) {
+      alert('That email is already registered. Please log in instead.');
+    } else {
+      alert(err?.response?.data?.message || 'Registration failed');
+    }
+  }
+});
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
